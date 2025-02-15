@@ -92,30 +92,13 @@ async function logAdminEvent(client, {
 	};
 	const channel = client.channels.cache.get(settings.logChannel);
 	if (!channel) return;
-	const embeds = [
-		new EmbedBuilder()
-			.setColor(colour)
-			.setAuthor({
-				iconURL: member.displayAvatarURL(),
-				name: member.displayName,
-			})
-			.setTitle(getMessage('log.admin.title.joined', {
-				...i18nOptions,
-				targetType: getMessage(`log.admin.title.target.${target.type}`),
-				verb: getMessage(`log.admin.verb.${action}`),
-			}))
-			.setDescription(getMessage('log.admin.description.joined', {
-				...i18nOptions,
-				targetType: getMessage(`log.admin.description.target.${target.type}`),
-				verb: getMessage(`log.admin.verb.${action}`),
-			}))
-			.addFields([
-				{
-					name: getMessage(`log.admin.title.target.${target.type}`),
-					value: target.name ? `${target.name} (\`${target.id}\`)` : target.id,
-				},
-			]),
-	];
+	const embeds = [];
+	let content = getMessage('log.admin.description.joined', {
+		...i18nOptions,
+		targetType: getMessage(`log.admin.description.target.${target.type}`),
+		verb: getMessage(`log.admin.verb.${action}`),
+	})
+	content += ' : ' + (target.name ? `${target.name} (\`${target.id}\`)` : target.id);
 
 	if (diff?.original && Object.entries(makeDiff(diff)).length) {
 		embeds.push(
@@ -126,7 +109,7 @@ async function logAdminEvent(client, {
 		);
 	}
 
-	return await channel.send({ embeds });
+	return await channel.send({ embeds, content });
 }
 
 /**
