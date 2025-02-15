@@ -711,14 +711,14 @@ module.exports = class TicketManager {
 				}
 			}
 
-			logTicketEvent(this.client, {
+			/*logTicketEvent(this.client, {
 				action: 'create',
 				target: {
 					id: ticket.id,
 					name: channel.toString(),
 				},
 				userId: interaction.user.id,
-			});
+			});*/
 		} catch (error) {
 			const ref = getSUID();
 			this.client.log.warn.tickets('An error occurred whilst creating ticket', channel.id);
