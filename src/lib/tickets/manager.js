@@ -1263,12 +1263,23 @@ module.exports = class TicketManager {
 			await channel.delete('Ticket closed' + (member ? ` by ${member.displayName}` : '') + reason ? `: ${reason}` : '');
 		}
 
+		// Add ticket topic to ticket name
+		let topic = '(no topic)';
+		if (ticket.topic) {
+			topic = await quick('crypto', worker => worker.decrypt(ticket.topic));
+			topic = String(topic)
+				.normalize('NFKD') // split accented characters
+				.replace(/[\u0300-\u036f]/g, '') // remove all accents
+				.trim()
+				.replace(/[^A-Za-z0-9 -]/g, '');
+		}
+
 		logTicketEvent(this.client, {
 			action: 'close',
 			target: {
 				archive: ticket.guild.archive,
 				id: ticket.id,
-				name: `${ticket.category.name} **#${ticket.number}**`,
+				name: `**${ticket.category.name}: ${topic}** #${ticket.number}`,
 				reason,
 			},
 			userId: closedBy || this.client.user.id,
