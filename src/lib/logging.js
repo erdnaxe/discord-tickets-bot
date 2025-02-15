@@ -142,28 +142,12 @@ async function logTicketEvent(client, {
 		user: `<@${member.user.id}>`,
 		verb: getMessage(`log.ticket.verb.${action}`),
 	};
-	const embeds = [
-		new EmbedBuilder()
-			.setColor(colour)
-			.setAuthor({
-				iconURL: member.displayAvatarURL(),
-				name: member.displayName,
-			})
-			.setTitle(getMessage('log.ticket.title', i18nOptions))
-			.setDescription(getMessage('log.ticket.description', i18nOptions))
-			.addFields([
-				{
-					name: getMessage('log.ticket.ticket'),
-					value: target.name ? `${target.name} (\`${target.id}\`)` : target.id,
-				},
-			]),
-	];
+	const embeds = [];
+	let content = getMessage('log.ticket.description', i18nOptions);
+	content += ' : ' + (target.name ? `${target.name} (\`${target.id}\`)` : target.id);
 
 	if (target.reason) {
-		embeds[0].addFields({
-			name: getMessage('log.ticket.reason'),
-			value: target.reason,
-		});
+		content += `, reason: ${target.reason}`;
 	}
 
 	if (diff?.original && Object.entries(makeDiff(diff)).length) {
@@ -192,6 +176,7 @@ async function logTicketEvent(client, {
 					),
 			] : [],
 		embeds,
+		content,
 	});
 }
 
