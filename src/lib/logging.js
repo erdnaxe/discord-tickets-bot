@@ -204,22 +204,9 @@ async function logMessageEvent(client, {
 	};
 	const channel = client.channels.cache.get(ticket.guild.logChannel);
 	if (!channel) return;
-	const embeds = [
-		new EmbedBuilder()
-			.setColor(colour)
-			.setAuthor({
-				iconURL: target.member?.displayAvatarURL() || 'https://discord.com/assets/1f0bfc0865d324c2587920a7d80c609b.png',
-				name: target.member?.displayName || 'Unknown',
-			})
-			.setTitle(getMessage('log.message.title', i18nOptions))
-			.setDescription(getMessage('log.message.description', i18nOptions))
-			.addFields([
-				{
-					name: getMessage('log.message.message'),
-					value: `[\`${target.id}\`](${target.url})`,
-				},
-			]),
-	];
+	const embeds = [];
+	let content = getMessage('log.message.description', i18nOptions);
+	content += ` : [\`${target.id}\`](${target.url})`
 
 	if (diff?.original && Object.entries(makeDiff(diff)).length) {
 		embeds.push(
@@ -230,7 +217,7 @@ async function logMessageEvent(client, {
 		);
 	}
 
-	return await channel.send({ embeds });
+	return await channel.send({ embeds, content });
 }
 
 module.exports = {
