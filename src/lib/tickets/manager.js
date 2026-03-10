@@ -1389,6 +1389,17 @@ module.exports = class TicketManager {
 		}
 		if (reason) fieldsArray.push(fields.reason);
 
+		// Add ticket topic to ticket name
+		let topic = '(no topic)';
+		if (ticket.topic) {
+			topic = await crypto.queue(w => w.decrypt(ticket.topic));
+			topic = String(topic)
+				.normalize('NFKD') // split accented characters
+				.replace(/[\u0300-\u036f]/g, '') // remove all accents
+				.trim()
+				.replace(/[^A-Za-z0-9 -]/g, '');
+		}
+
 		logTicketEvent(this.client, {
 			action: 'close',
 			payload: {
@@ -1397,7 +1408,7 @@ module.exports = class TicketManager {
 			},
 			target: {
 				id: ticket.id,
-				name: `${ticket.category.name} **#${ticket.number}**`,
+				name: `**${ticket.category.name}: ${topic}** #${ticket.number}`,
 			},
 			userId: closedBy || this.client.user.id,
 		});
